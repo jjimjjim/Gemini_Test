@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './BoardWrite.module.css';
+import { addPost } from '../../api/boardApi';
 
 const BoardWrite = () => {
   const navigate = useNavigate();
@@ -11,15 +12,22 @@ const BoardWrite = () => {
   const author = "현재로그인사용자";
 
   const handleChange = (e) => {
-    const {name, value} = e.target;
-  }
+    const { name, value } = e.target;
+    setContents((prev) => ({
+      ...prev,
+      writer: "loginId",
+      [name]: value
+    }));
+  };
 
   const handleSave = () => {
-    if (!title.trim() || !content.trim()) {
+    if (!contents.title.trim() || !contents.contents.trim()) {
       alert('제목과 내용을 모두 입력해 주세요.');
       return;
     }
-    navigate('/board');
+    addPost(contents).then(resp => {
+      navigate('/board');
+    })
   };
 
   return (
@@ -44,6 +52,7 @@ const BoardWrite = () => {
             type="text" 
             id="title" 
             placeholder="제목을 입력하세요"
+            name="title"
             onChange={handleChange}
           />
         </div>
@@ -54,6 +63,7 @@ const BoardWrite = () => {
             id="content" 
             placeholder="내용을 입력하세요" 
             className={styles.textarea}
+            name="contents"
             onChange={handleChange}
           />
         </div>
