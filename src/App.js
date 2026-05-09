@@ -23,7 +23,6 @@ function App() {
   return (
     <>
       {loading && <Loading />}
-
       <Routes>
         {/* Members Routes */}
         <Route path="/" element={<Login />} />
