@@ -2,8 +2,13 @@ import { create } from 'zustand';
 
 const useLoadingStore = create(set => ({
     loading: false,
-    setLoading: (value) => {
-        set({ loading: value });
+    
+    startEndLoading : () => {
+        set({ loading: true });
+
+        setTimeout(() => {
+            set({ loading: false });
+        }, 1000);
     }
 }));
 
