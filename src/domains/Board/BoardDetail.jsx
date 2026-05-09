@@ -60,7 +60,7 @@ const BoardDetail = () => {
           삭제하기
         </button>
       </div>
-      <Reply />
+      <Reply seq={seq}/>
     </div>
   );
 };

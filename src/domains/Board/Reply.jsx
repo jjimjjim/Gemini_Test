@@ -1,37 +1,42 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styles from './Reply.module.css';
+import { getReplyByParentSeq, postReply } from '../../api/replyApi';
 
-const Reply = () => {
-  const [comment, setComment] = useState('');
-  // Mock data for display including author and date
-  const [replies, setReplies] = useState([
-    { 
-      id: 1, 
-      author: '홍길동', 
-      content: '첫 번째 댓글입니다.', 
-      date: '2024-05-08 14:30' 
-    },
-    { 
-      id: 2, 
-      author: '김철수', 
-      content: '두 번째 댓글입니다. UI가 깔끔하네요!', 
-      date: '2024-05-08 15:45' 
-    },
-  ]);
+const Reply = ({ seq }) => {
+  const [reply, setReply] = useState([{
+    seq: "",
+    writer: "",
+    contents: "",
+    write_date: ""
+  }]);
+  const [comment, setComment] = useState("");
 
-  const handleSubmit = () => {
-    if (!comment.trim()) return;
-    const now = new Date();
-    const formattedDate = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')} ${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+
+  useEffect(() => {
+    getReplyByParentSeq(seq).then(resp => {
+      setReply(resp.data);
+    })
+  }, []);
+
+
+  const handleAddReply = () => {
+    if (comment === "" || comment === null) {
+      alert("댓글을 먼저 작성해 주세요.");
+      return;
+    }
     
     const newReply = {
-      id: Date.now(),
-      author: '현재 사용자', // 실제 구현시에는 로그인 유저 정보 사용
-      content: comment,
-      date: formattedDate
-    };
-    setReplies([...replies, newReply]);
-    setComment('');
+      parent_seq: seq,
+      writer: "김수빈",
+      contents: comment
+    }
+
+    postReply(newReply).then(() => {
+      getReplyByParentSeq(seq).then(resp => {
+        setReply(resp.data);
+      })
+      setComment("");
+    })
   };
 
   return (
@@ -41,22 +46,21 @@ const Reply = () => {
           className={styles.textarea}
           placeholder="댓글을 입력해주세요..."
           value={comment}
-          onChange={(e) => setComment(e.target.value)}
-        />
-        <button className={styles.submitBtn} onClick={handleSubmit}>
+          onChange={(e) => setComment(e.target.value)} />
+        <button className={styles.submitBtn} onClick={handleAddReply}>
           등록
         </button>
       </div>
 
       <div className={styles.replyList}>
-        {replies.map((reply) => (
-          <div key={reply.id} className={styles.replyItem}>
+        {reply.map((reply) => (
+          <div key={reply.seq} className={styles.replyItem}>
             <div className={styles.mainContent}>
-              <div className={styles.author}>{reply.author}</div>
-              <div className={styles.content}>{reply.content}</div>
+              <div className={styles.author}>{reply.writer}</div>
+              <div className={styles.content}>{reply.contents}</div>
             </div>
             <div className={styles.sideContent}>
-              <div className={styles.date}>{reply.date}</div>
+              <div className={styles.date}>{reply.write_date.substring(0, 10)}</div>
               <div className={styles.buttonGroup}>
                 <button className={styles.editBtn}>수정</button>
                 <button className={styles.deleteBtn}>삭제</button>
