@@ -10,11 +10,11 @@ const useAuthStore = create(set => ({
         sessionStorage.setItem("loginId",result.id);
         set({token:result.token, loginId:result.id});
     },
-    // logout:()=>{
-    //     sessionStorage.removeItem("token");
-    //     // sessionStorage.removeItem("loginId");
-    //     set({token:null,loginId:null});
-    // }
+    logout:()=>{
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("loginId");
+        set({token:null,loginId:null});
+    }
 }));
 
 export default useAuthStore;

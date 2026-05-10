@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import styles from './Signup.module.css';
 import { useNavigate } from 'react-router-dom';
-import { isIdExist } from '../../api/membersApi';
+import { insertForm, isIdExist } from '../../api/membersApi';
 
 const Signup = () => {
   //기본 회원가입 데이터를 저장할 상태변수
@@ -66,7 +66,7 @@ const Signup = () => {
     
     isIdExist(formData.id).then(resp => {
         console.log(resp.data);
-        if (resp.data === 1) {
+        if (resp.data == 1) {
           alert("이미 존재하는 ID입니다.");
           setIsIdChecked(false);
         } else {
@@ -76,6 +76,7 @@ const Signup = () => {
       })
       .catch(err => {
         console.error("error", err);
+        alert("중복 체크 중 오류가 발생했습니다.");
         setIsIdChecked(false);
       });
   };
@@ -90,8 +91,13 @@ const Signup = () => {
       setPwError('비밀번호를 다시 확인해주세요.');
       return;
     }
-    console.log('Signup data:', formData);
-    // 실제 회원가입 axios 코드가 여기에 들어갑니다.
+    
+    insertForm(formData).then(resp => {
+        alert("회원가입이 완료되었습니다.");
+        navigate("/"); // 가입 성공 시 로그인(메인) 페이지로 이동
+    }).catch(err => {
+        console.error("Signup error:", err);
+    });
   };
 
   return (
